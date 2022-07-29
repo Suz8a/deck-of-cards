@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getCard, getDeck } from "../api";
+import { getAllCards, getDeck } from "../api";
 
 export type Card = {
   image: string;
@@ -21,62 +21,37 @@ export function useDeckOfCards() {
     cards: [],
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
-  const getNewDeck = useCallback(async () => {
+  const createNewDeck = useCallback(async () => {
     setLoading(true);
-    const response = await getDeck();
+    const newDeck = await getDeck();
+    const cardsInfo =
+      newDeck?.success === true
+        ? await getAllCards(newDeck.deck_id)
+        : undefined;
 
-    if (response.success === true) {
+    if (newDeck.success === true) {
       setDeck({
-        deckId: response.deck_id,
-        remaining: response.remaining,
-        cards: [],
+        deckId: newDeck.deck_id,
+        remaining: newDeck.remaining,
+        cards: [...cardsInfo.cards],
       });
     }
 
-    if (response.success === true) {
-      setError(true);
-    }
-
-    if (response.success === true) {
-      setError(false);
+    if (newDeck.error) {
+      setError(newDeck.error);
     }
 
     setLoading(false);
   }, []);
 
-  const getNewCard = useCallback(async () => {
-    setLoading(true);
-    const response = await getCard(deck.deckId);
-
-    if (response.success === true) {
-      const card = response.cards[0];
-
-      setDeck((currentDeck) => ({
-        ...currentDeck,
-        cards: [...currentDeck.cards, card],
-      }));
-    }
-
-    if (response.success === true) {
-      setError(true);
-    }
-
-    if (response.success === true) {
-      setError(false);
-    }
-
-    setLoading(false);
-  }, [deck.deckId]);
-
   useEffect(() => {
-    if (deck.deckId.trim().length === 0 && !error) getNewDeck();
-  }, [deck.deckId, error, getNewDeck]);
+    if (deck.deckId.trim().length === 0 && !error) createNewDeck();
+  }, [deck.deckId, error, createNewDeck]);
 
   return {
-    getNewDeck,
-    getNewCard,
+    createNewDeck,
     loading,
     error,
     deck,

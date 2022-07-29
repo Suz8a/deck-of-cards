@@ -8,7 +8,7 @@ export async function getDeck() {
   return response.data;
 }
 
-export async function getCard(deckId: string) {
-  const response = await http.get(`/${deckId}/draw/?count=1`);
+export async function getAllCards(deckId: string) {
+  const response = await http.get(`/${deckId}/draw/?count=52`);
   return response.data;
 }
