@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSpring, animated } from "react-spring";
 import { CardImage } from "./styled";
+import BackOfCard from "../../assets/back-of-card.jpeg";
 
 export type CardProps = {
   deckRef: any;
@@ -16,12 +17,12 @@ export const Card = ({ deckRef, index, cardState, src, alt }: CardProps) => {
 
   const transformFrom = {
     transform: positionDiff
-      ? `translateX(${positionDiff.left}px) translateY(${positionDiff.top}px)`
+      ? `translateX(${positionDiff.left}px) translateY(${positionDiff.top}px) rotateY(180deg)`
       : "",
   };
 
   const transformTo = {
-    transform: `translateX(0px) translateY(0px)`,
+    transform: `translateX(0px) translateY(0px) rotateY(0deg)`,
   };
 
   const springProps = useSpring({
@@ -57,10 +58,43 @@ export const Card = ({ deckRef, index, cardState, src, alt }: CardProps) => {
         height: "134px",
         position: "relative",
         borderRadius: "5px",
+        backfaceVisibility: "hidden",
         ...springProps,
       }}
     >
-      <CardImage src={src} alt={alt} />
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          top: 0,
+          margin: "auto",
+          width: "100%",
+          height: "100%",
+          backfaceVisibility: "hidden",
+          transform: "rotateY(180deg)",
+          border: "1px solid #808080",
+          borderRadius: "5px",
+        }}
+      >
+        <CardImage src={BackOfCard} alt={alt} />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          top: 0,
+          margin: "auto",
+          width: "100%",
+          height: "100%",
+          backfaceVisibility: "hidden",
+        }}
+      >
+        <CardImage src={src} alt={alt} />
+      </div>
     </animated.div>
   );
 };
