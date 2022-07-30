@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getAllCards, getDeck } from "../api";
+import { cardValue } from "../constants/pokerCardValue";
 
 export type Card = {
   image: string;
@@ -11,17 +12,48 @@ export type Card = {
 export type Deck = {
   deckId: string;
   remaining: number;
+  lastQueenPosition: number;
   cards: Card[] | [];
+  sortedCards: Card[] | [];
 };
 
 export function useDeckOfCards() {
   const [deck, setDeck] = useState<Deck>({
     deckId: "",
     remaining: 0,
+    lastQueenPosition: 0,
+    sortedCards: [],
     cards: [],
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState("");
+
+  const getLastQueenPosition = useCallback((cards: Card[]) => {
+    var queensFound: any = [];
+
+    cards.forEach((card, index) => {
+      if (card.value === "QUEEN") {
+        queensFound.push(index);
+      }
+    });
+
+    const lastQueenIndex = queensFound[queensFound.length - 1];
+    return lastQueenIndex;
+  }, []);
+
+  const sortCards = useCallback((cards: Card[], lastQueenPosition: number) => {
+    var sortedCards = [
+      ...cards
+        .filter((_, index) => index < lastQueenPosition)
+        .sort(({ code: firstCardCode }, { code: secondCardCode }) => {
+          return (
+            cardValue[firstCardCode as any] - cardValue[secondCardCode as any]
+          );
+        }),
+    ];
+
+    return sortedCards;
+  }, []);
 
   const createNewDeck = useCallback(async () => {
     setLoading(true);
@@ -31,11 +63,16 @@ export function useDeckOfCards() {
         ? await getAllCards(newDeck.deck_id)
         : undefined;
 
+    const lastQueenIndex = getLastQueenPosition(cardsInfo.cards);
+    const sortedCards = sortCards(cardsInfo.cards, lastQueenIndex);
+
     if (newDeck.success === true) {
       setDeck({
         deckId: newDeck.deck_id,
         remaining: newDeck.remaining,
-        cards: [...cardsInfo.cards],
+        lastQueenPosition: lastQueenIndex,
+        cards: cardsInfo.cards,
+        sortedCards: sortedCards,
       });
     }
 

@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Cards from "./layouts/cards";
+import { Cards } from "./layouts/cards";
 
 export const Router = () => {
   return (
