@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSpring, animated } from "react-spring";
+import { CardImage } from "./styled";
 
 export type CardProps = {
   deckRef: any;
@@ -59,11 +60,7 @@ export const Card = ({ deckRef, index, cardState, src, alt }: CardProps) => {
         ...springProps,
       }}
     >
-      <img
-        src={src}
-        alt={alt}
-        style={{ width: "100px", height: "134px", borderRadius: "5px" }}
-      />
+      <CardImage src={src} alt={alt} />
     </animated.div>
   );
 };
