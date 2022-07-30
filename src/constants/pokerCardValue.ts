@@ -1,4 +1,4 @@
-export const cardValue = {
+export const cardValue: any = {
   // CLUBS
   "2C": 1,
   "3C": 2,
