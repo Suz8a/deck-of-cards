@@ -9,33 +9,33 @@ import { Deck } from "../../components/deck";
 import CircularProgress from "@mui/material/CircularProgress";
 
 export const Cards = () => {
-  const { deck, error, loading } = useDeckOfCards();
+  const { deck, error, loading, createNewDeck } = useDeckOfCards();
   const { open, openSnackbar, closeSnackbar } = useSnackbar();
   const [cardState, setCardState] = useState("");
+  const mainDeck = useRef(null);
+  const centeredDeck = useRef(null);
 
-  const deckRef = useRef(null);
-  const deckRef2 = useRef(null);
-
-  const onClickButton = useCallback(async () => {
+  const onShowCards = useCallback(async () => {
     setCardState("SHOW");
-  }, []);
-
-  useEffect(() => {
-    if (deck.lastQueenPosition > 0 && !loading && cardState !== "")
+    setTimeout(() => {
+      setCardState("HIDDEN");
       setTimeout(() => {
-        setCardState("HIDDEN");
-        setTimeout(() => {
-          setCardState("SORT");
-        }, (deck.lastQueenPosition + 1) * 100);
-      }, (deck.lastQueenPosition + 1) * 1000 + 1000);
-  }, [cardState, deck.lastQueenPosition, loading]);
+        setCardState("SORT");
+      }, (deck.lastQueenPosition + 1) * 100);
+    }, (deck.lastQueenPosition + 1) * 1000 + 1000);
+  }, [deck.lastQueenPosition]);
+
+  const onCreateNewDeck = useCallback(() => {
+    setCardState("");
+    createNewDeck();
+  }, [createNewDeck]);
 
   useEffect(() => {
     if (error) openSnackbar();
   }, [error, openSnackbar]);
 
   const cards =
-    cardState === "SHOW"
+    cardState === "SHOW" || cardState === "HIDDEN"
       ? deck.cardsUntilQueen
       : cardState === "SORT"
       ? deck.sortedCards
@@ -52,15 +52,24 @@ export const Cards = () => {
               <Button
                 style={{ width: "200px", height: "50px" }}
                 variant="contained"
-                onClick={onClickButton}
+                onClick={onShowCards}
               >
-                Imprimir cartas
+                Show cards
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                style={{ width: "200px", height: "50px" }}
+                variant="text"
+                onClick={onCreateNewDeck}
+              >
+                New Deck
               </Button>
             </Grid>
           </Grid>
 
           <Grid item container>
-            <Deck style={{ backgroundColor: "red" }} ref={deckRef} />
+            <Deck style={{ backgroundColor: "gray" }} ref={mainDeck} />
           </Grid>
 
           <div
@@ -73,7 +82,7 @@ export const Cards = () => {
               transform: "translate(-50%, -50%)",
             }}
           >
-            <Deck style={{ backgroundColor: "blue" }} ref={deckRef2} />
+            <Deck ref={centeredDeck} />
           </div>
 
           <Grid container item spacing={2} justifyContent="center">
@@ -84,7 +93,7 @@ export const Cards = () => {
                     src={image}
                     alt={`${value}-${suit}-card`}
                     key={index}
-                    deckRef={cardState === "SHOW" ? deckRef : deckRef2}
+                    deckRef={cardState === "SHOW" ? mainDeck : centeredDeck}
                     index={index}
                     cardState={cardState}
                   />

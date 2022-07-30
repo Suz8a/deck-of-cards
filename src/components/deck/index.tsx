@@ -1,5 +1,4 @@
 import React, { CSSProperties } from "react";
-
 import { DeckOfCards } from "./styled";
 
 export type DeckOfCardsProps = {

@@ -9,6 +9,5 @@ export const CardsBoard = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   position: relative;
-  background-color: gray;
   padding: 10px;
 `;
