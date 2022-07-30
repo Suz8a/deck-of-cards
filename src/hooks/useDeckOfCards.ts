@@ -14,6 +14,7 @@ export type Deck = {
   remaining: number;
   lastQueenPosition: number;
   cards: Card[] | [];
+  cardsUntilQueen: Card[] | [];
   sortedCards: Card[] | [];
 };
 
@@ -23,6 +24,7 @@ export function useDeckOfCards() {
     remaining: 0,
     lastQueenPosition: 0,
     sortedCards: [],
+    cardsUntilQueen: [],
     cards: [],
   });
   const [loading, setLoading] = useState<boolean>(false);
@@ -64,6 +66,9 @@ export function useDeckOfCards() {
         : undefined;
 
     const lastQueenIndex = getLastQueenPosition(cardsInfo.cards);
+    const cardsUntilQueen = cardsInfo.cards.filter(
+      (_: any, index: number) => index <= lastQueenIndex
+    );
     const sortedCards = sortCards(cardsInfo.cards, lastQueenIndex);
 
     if (newDeck.success === true) {
@@ -73,6 +78,7 @@ export function useDeckOfCards() {
         lastQueenPosition: lastQueenIndex,
         cards: cardsInfo.cards,
         sortedCards: sortedCards,
+        cardsUntilQueen,
       });
     }
 
@@ -81,7 +87,7 @@ export function useDeckOfCards() {
     }
 
     setLoading(false);
-  }, []);
+  }, [getLastQueenPosition, sortCards]);
 
   useEffect(() => {
     if (deck.deckId.trim().length === 0 && !error) createNewDeck();

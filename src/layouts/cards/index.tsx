@@ -4,7 +4,6 @@ import { CardsBoard } from "./styled";
 import Alert from "@mui/material/Alert";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { Grid, Snackbar, Button } from "@mui/material";
-import { useInterval } from "../../hooks/useInterval";
 import { Card } from "../../components/card";
 import { Deck } from "../../components/deck";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -12,72 +11,56 @@ import CircularProgress from "@mui/material/CircularProgress";
 export const Cards = () => {
   const { deck, error, loading } = useDeckOfCards();
   const { open, openSnackbar, closeSnackbar } = useSnackbar();
-  const [count, setCount] = useState(0);
-  const [lastQueenIndex, setLastQueenIndex] = useState(0);
-  const [intervalActive, setIntervalActive] = useState(false);
-  const [showSortedCards, setShowSortedCards] = useState<boolean>(false);
-
-  const [cardState, setCardState] = useState("SHOW");
+  const [cardState, setCardState] = useState("");
 
   const deckRef = useRef(null);
   const deckRef2 = useRef(null);
 
-  useInterval(
-    () => {
-      setCount(count + 1);
-    },
-    // Delay in milliseconds or null to stop it
-    intervalActive && count <= lastQueenIndex && count < 52 ? 1000 : null
-  );
-
-  const getLastQueenPosition = useCallback(() => {
-    var queensFound: any = [];
-
-    deck.cards.forEach((card, index) => {
-      if (card.value === "QUEEN") {
-        queensFound.push(index);
-      }
-    });
-
-    const lastQueenIndex = queensFound[queensFound.length - 1];
-
-    return lastQueenIndex;
-  }, [deck.cards]);
-
   const onClickButton = useCallback(async () => {
-    setLastQueenIndex(getLastQueenPosition());
-    setIntervalActive(true);
-  }, [getLastQueenPosition]);
+    setCardState("SHOW");
+  }, []);
 
   useEffect(() => {
-    if (deck.lastQueenPosition)
+    if (deck.lastQueenPosition > 0 && !loading && cardState !== "")
       setTimeout(() => {
         setCardState("HIDDEN");
-      }, (deck.lastQueenPosition + 1) * 180);
-  }, [deck.lastQueenPosition]);
+        setTimeout(() => {
+          setCardState("SORT");
+        }, (deck.lastQueenPosition + 1) * 100);
+      }, (deck.lastQueenPosition + 1) * 1000 + 1000);
+  }, [cardState, deck.lastQueenPosition, loading]);
 
   useEffect(() => {
     if (error) openSnackbar();
   }, [error, openSnackbar]);
 
+  const cards =
+    cardState === "SHOW"
+      ? deck.cardsUntilQueen
+      : cardState === "SORT"
+      ? deck.sortedCards
+      : [];
+
+  if (loading) return <CircularProgress />;
+
   return (
     <>
-      {loading && <CircularProgress />}
-
       <CardsBoard>
-        <Grid container spacing={2}>
-          <Grid container item spacing={2} justifyContent="center">
+        <Grid container spacing={2} justifyContent="center">
+          <Grid container item justifyContent="center">
             <Grid item>
-              <Button variant="contained" onClick={onClickButton}>
+              <Button
+                style={{ width: "200px", height: "50px" }}
+                variant="contained"
+                onClick={onClickButton}
+              >
                 Imprimir cartas
               </Button>
             </Grid>
           </Grid>
 
-          <Grid container item spacing={2}>
-            <Grid item>
-              <Deck style={{ backgroundColor: "red" }} ref={deckRef} />
-            </Grid>
+          <Grid item container>
+            <Deck style={{ backgroundColor: "red" }} ref={deckRef} />
           </Grid>
 
           <div
@@ -94,21 +77,19 @@ export const Cards = () => {
           </div>
 
           <Grid container item spacing={2} justifyContent="center">
-            {deck.cards &&
-              deck.cards
-                .filter((_, index) => index <= deck.lastQueenPosition)
-                .map(({ image, value, suit }, index) => (
-                  <Grid item key={index}>
-                    <Card
-                      src={image}
-                      alt={`${value}-${suit}-card`}
-                      key={index}
-                      deckRef={cardState === "SHOW" ? deckRef : deckRef2}
-                      index={index}
-                      cardState={cardState}
-                    />
-                  </Grid>
-                ))}
+            {cards &&
+              cards.map(({ image, value, suit }, index) => (
+                <Grid item key={index}>
+                  <Card
+                    src={image}
+                    alt={`${value}-${suit}-card`}
+                    key={index}
+                    deckRef={cardState === "SHOW" ? deckRef : deckRef2}
+                    index={index}
+                    cardState={cardState}
+                  />
+                </Grid>
+              ))}
           </Grid>
         </Grid>
 

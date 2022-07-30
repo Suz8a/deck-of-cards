@@ -24,10 +24,16 @@ export const Card = ({ deckRef, index, cardState, src, alt }: CardProps) => {
   };
 
   const springProps = useSpring({
-    from: cardState === "SHOW" ? transformFrom : transformTo,
-    delay: cardState === "SHOW" ? (index + 1) * 100 : (index + 1) * 10,
+    from:
+      cardState === "SHOW" || cardState === "SORT"
+        ? transformFrom
+        : transformTo,
+    to:
+      cardState === "SHOW" || cardState === "SORT"
+        ? transformTo
+        : transformFrom,
+    delay: cardState === "SHOW" ? (index + 1) * 1000 : (index + 1) * 100,
     pause: !positionDiff,
-    to: cardState === "SHOW" ? transformTo : transformFrom,
   });
 
   useEffect(() => {

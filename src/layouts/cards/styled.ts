@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const CardsBoard = styled.div`
   width: 80%;
+  min-height: 350px;
   height: auto;
   margin: 50px auto auto auto;
   display: flex;
@@ -9,4 +10,5 @@ export const CardsBoard = styled.div`
   gap: 10px;
   position: relative;
   background-color: gray;
+  padding: 10px;
 `;
