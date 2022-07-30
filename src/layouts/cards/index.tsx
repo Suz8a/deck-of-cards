@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDeckOfCards } from "../../hooks/useDeckOfCards";
-import { CardsBoard } from "./styled";
+import { CardsBoard, StyledCircularProgress } from "./styled";
 import Alert from "@mui/material/Alert";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { Grid, Snackbar, Button } from "@mui/material";
 import { Card } from "../../components/card";
 import { Deck } from "../../components/deck";
-import CircularProgress from "@mui/material/CircularProgress";
+import BackOfCard from "../../assets/back-of-card.jpeg";
 
 export const Cards = () => {
   const { deck, error, loading, createNewDeck } = useDeckOfCards();
   const { open, openSnackbar, closeSnackbar } = useSnackbar();
   const [cardState, setCardState] = useState("");
+  const [showButtonIsDisabled, setShowButtonIsDisabled] = useState(false);
   const mainDeck = useRef(null);
   const centeredDeck = useRef(null);
 
   const onShowCards = useCallback(async () => {
+    setShowButtonIsDisabled(true);
     setCardState("SHOW");
     setTimeout(() => {
       setCardState("HIDDEN");
@@ -28,6 +30,7 @@ export const Cards = () => {
   const onCreateNewDeck = useCallback(() => {
     setCardState("");
     createNewDeck();
+    setShowButtonIsDisabled(false);
   }, [createNewDeck]);
 
   useEffect(() => {
@@ -41,16 +44,19 @@ export const Cards = () => {
       ? deck.sortedCards
       : [];
 
-  if (loading) return <CircularProgress />;
+  if (loading) {
+    return <StyledCircularProgress size="150px" />;
+  }
 
   return (
     <>
       <CardsBoard>
         <Grid container spacing={2} justifyContent="center">
-          <Grid container item justifyContent="center">
+          <Grid container item spacing={2} justifyContent="center">
             <Grid item>
               <Button
                 style={{ width: "200px", height: "50px" }}
+                disabled={showButtonIsDisabled}
                 variant="contained"
                 onClick={onShowCards}
               >
@@ -60,7 +66,7 @@ export const Cards = () => {
             <Grid item>
               <Button
                 style={{ width: "200px", height: "50px" }}
-                variant="text"
+                variant="outlined"
                 onClick={onCreateNewDeck}
               >
                 New Deck
@@ -69,7 +75,17 @@ export const Cards = () => {
           </Grid>
 
           <Grid item container>
-            <Deck style={{ backgroundColor: "gray" }} ref={mainDeck} />
+            <Deck
+              style={{
+                backgroundColor: "gray",
+                backgroundImage: `url(${BackOfCard})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+                border: "1px solid #808080",
+                borderRadius: "5px",
+              }}
+              ref={mainDeck}
+            />
           </Grid>
 
           <div
