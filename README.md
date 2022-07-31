@@ -23,7 +23,7 @@ https://user-images.githubusercontent.com/43051272/182004395-ad2fc7a0-1029-4d55-
 
 ## Requirements
 - [Node (v16.15.1)](https://nodejs.org/en/)
-- [yarn](https://yarnpkg.com/) or similar package manager
+- [yarn](https://yarnpkg.com/) 
 
 ## Setup
 
