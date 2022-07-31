@@ -1,6 +1,6 @@
 # Deck of Cards
 
-Page wich draws 1 card per second from a deck and keeps drawing cards from the deck until it has drawn a **QUEEN** of every suit. Once all **QUEENS** are drawns, shows the cards in the following way:
+Page with two buttons where if the button **SHOW CARDS** is clicked, starts drawing 1 card per second from a deck and keeps drawing cards until it has drawn a **QUEEN** of every suit. Once all **QUEENS** are drawns, shows the cards in the following way:
 
 - All of the cards that were drawn for each suit are sort by value (Aces are high)
  Example: Hearts: [2, 3, 7, Jack, Queen].
